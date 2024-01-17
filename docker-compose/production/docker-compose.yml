@@ -1,0 +1,97 @@
+services:
+  configserver:
+    image: jorgeyh7/configserver:latest
+    mem_limit: 800m
+    ports:
+      - "8085:8085"
+    networks:
+      - jorgeyh7-network
+      -
+
+  eurekaserver:
+    image: jorgeyh7/eurekaserver:latest
+    mem_limit: 800m
+    ports:
+      - "8065:8065"
+    networks:
+      - jorgeyh7-network
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8085/
+
+  hotels:
+    image: jorgeyh7/hotel:latest
+    mem_limit: 800m
+    ports:
+      - "8080:8080"
+    networks:
+      - jorgeyh7-network
+    depends_on:
+      - configserver
+      - eurekaserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILE_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8085/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8065/eureka/
+
+
+
+
+  rooms:
+    image: jorgeyh7/room:latest
+    mem_limit: 800m
+    ports:
+      - "8081:8081"
+    networks:
+      - jorgeyh7-network
+    depends_on:
+      - configserver
+      - eurekaserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILE_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8085/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8065/eureka/
+
+  reservations:
+    image: jorgeyh7/reservation:latest
+    mem_limit: 800m
+    ports:
+      - "8082:8082"
+    networks:
+      - jorgeyh7-network
+    depends_on:
+      - configserver
+      - eurekaserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    environment:
+      SPRING_PROFILE_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8085/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8065/eureka/
+
+networks:
+  jorgeyh7-network:

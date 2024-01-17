@@ -1,0 +1,28 @@
+services:
+
+  hotels:
+    image: jorgeyh7/hotel:latest
+    mem_limit: 800m
+    ports:
+      - "8080:8080"
+    networks:
+      - jorgeyh7-network
+    
+  rooms:
+    image: jorgeyh7/room:latest
+    mem_limit: 800m
+    ports:
+      - "8081:8081"
+    networks:
+      - jorgeyh7-network
+    
+  reservations:
+    image: jorgeyh7/reservation:latest
+    mem_limit: 800m
+    ports:
+      - "8082:8082"
+    networks:
+      - jorgeyh7-network
+    
+networks:
+  jorgeyh7-network:
